@@ -1,0 +1,76 @@
+server:
+  port: 7070
+  servlet:
+    context-path: /${spring.application.name}
+spring:
+  application:
+    name: baseTemplate
+
+    #数据源
+  datasource:
+    url: jdbc:mysql://localhost:3306/user_db?serverTimezone=UTC&useUnicode=true&useSSL=false&characterEncoding=utf8
+    username: root
+    password: 123123
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    type: com.alibaba.druid.pool.DruidDataSource
+    druid:
+      max-active: 20
+      initialSize: 1
+      maxWait: 60000
+      minIdle: 1
+      #既作为检测的间隔时间又作为testWhileIdel执行的依据
+      timeBetweenEvictionRunsMillis: 60000
+      #销毁线程时检测当前连接的最后活动时间和当前时间差大于该值时，关闭当前连接
+      minEvictableIdleTimeMillis: 300000
+      #用来检测连接是否有效的sql 必须是一个查询语句
+      validationQuery: select 'x'
+      #申请连接的时候检测，如果空闲时间大于timeBetweenEvictionRunsMillis，执行validationQuery检测连接是否有效。
+      testWhileIdle: true
+      #申请连接时会执行validationQuery检测连接是否有效,开启会降低性能,默认为true
+      testOnBorrow: false
+      #归还连接时会执行validationQuery检测连接是否有效,开启会降低性能,默认为true
+      testOnReturn: false
+      # 是否缓存preparedStatement，也就是PSCache  官方建议MySQL下建议关闭   个人建议如果想用SQL防火墙 建议打开
+      poolPreparedStatements: false
+      maxOpenPreparedStatements: 20
+      #当值大于0时poolPreparedStatements会自动修改为true
+      maxPoolPreparedStatementPerConnectionSize: 20
+      # 通过connectProperties属性来打开mergeSql功能；慢SQL记录
+      connectionProperties: druid.stat.mergeSql=true;druid.stat.slowSqlMillis=5000
+      # 合并多个DruidDataSource的监控数据
+      useGlobalDataSourceStat: true
+      #基础监控配置
+      web-stat-filter:
+        enabled: true
+        url-pattern: /*
+        #设置不统计哪些URL
+        exclusions: "*.js,*.gif,*.jpg,*.png,*.css,*.ico,/druid/*"
+        session-stat-enable: true
+        session-stat-max-count: 100
+        #设置视图拦截,访问druid监控页的账号和密码,默认没有
+      stat-view-servlet:
+        enabled: true
+        url-pattern: /druid/*
+        reset-enable: true
+        #设置监控页面的登录名和密码
+        login-username: admin
+        login-password: 123　
+        #白名单ip
+        allow: 127.0.0.1
+        #黑名单　　　　
+        #deny: 192.168.1.100
+
+#mybatis-plus 配置
+mybatis-plus:
+  mapper-locations: classpath*:/mapper/**/*Mapper.xml
+  typeAliasesPackage: com.yougen.base.template.*.bean
+  global-config:
+   banner: false
+   db-config:
+    id-type: uuid
+    table-underline: true
+  configuration:
+    # 这个配置会将执行的sql打印出来，在开发或测试的时候可以用
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+    # 返回类型为Map,显示null对应的字段
+    call-setters-on-nulls: true
